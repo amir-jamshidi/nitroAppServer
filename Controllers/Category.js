@@ -1,0 +1,31 @@
+const categoryModel = require('.././Models/Category');
+
+const create = async (req, res) => {
+    const { title, href } = req.body;
+    const newCategory = await categoryModel.create({ title, href });
+    if (newCategory) {
+        res.status(201).json({
+            message: 'success',
+            status: 1
+        })
+    } else {
+        res.status(400).json({
+            message: 'error',
+            status: 101
+        })
+    }
+}
+
+const get = async (req, res) => {
+
+}
+
+const remove = async (req, res) => {
+
+}
+
+module.exports = {
+    create,
+    get,
+    remove
+}
