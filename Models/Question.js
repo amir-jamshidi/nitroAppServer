@@ -23,7 +23,16 @@ const schema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'category',
         required: true
+    },
+    isHasTrueAnswer: {
+        type: Number,
+        default: 0
+    },
+    answerCount: {
+        type: Number,
+        default: 0
     }
+
 }, { timestamps: true })
 
 const model = mongoose.model('question', schema);

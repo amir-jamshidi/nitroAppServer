@@ -20,6 +20,10 @@ const schema = new mongoose.Schema({
     role: {
         type: String,
         required: true
+    },
+    score: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 
