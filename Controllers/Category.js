@@ -1,6 +1,7 @@
 const categoryModel = require('.././Models/Category');
 
 const create = async (req, res) => {
+
     const { title, href } = req.body;
     const newCategory = await categoryModel.create({ title, href });
     if (newCategory) {
@@ -17,7 +18,9 @@ const create = async (req, res) => {
 }
 
 const get = async (req, res) => {
-
+  
+    const categories = await categoryModel.find().limit(20).lean();
+    return res.status(200).json(categories);
 }
 
 const remove = async (req, res) => {

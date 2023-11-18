@@ -16,6 +16,10 @@ const schema = new mongoose.Schema({
     avatar: {
         type: String,
         default: 'userAvatar.png'
+    },
+    role: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 

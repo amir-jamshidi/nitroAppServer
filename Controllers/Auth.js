@@ -64,7 +64,7 @@ const login = async (req, res) => {
 }
 
 const getMe = async (req, res) => {
-
+    res.status(200).json({ userInfo: req.user });
 }
 
 const confirmUser = async (req, res) => {
@@ -73,6 +73,7 @@ const confirmUser = async (req, res) => {
 
     // Verify Code
     const verifyUser = await preUserModel.findOneAndDelete({ phone, code });
+
     if (verifyUser) {
 
         const isHasUser = await userModel.findOne({ phone }).lean();
@@ -84,7 +85,8 @@ const confirmUser = async (req, res) => {
             })
         } else {
             //Register
-            const newUser = await userModel.create({ phone })
+            const usersCount = await userModel.find().countDocuments().lean();
+            const newUser = await userModel.create({ phone, role: usersCount === 0 ? 'ADMIN' : 'USER' })
             const accessToken = jwt.sign({ id: newUser._id }, process.env.JWTSECRET, { expiresIn: '10day' })
             return res.status(201).json({
                 token: accessToken,
