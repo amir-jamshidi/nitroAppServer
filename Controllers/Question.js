@@ -18,10 +18,11 @@ const getOne = async (req, res) => {
 
     const { questionID } = req.params;
 
-    const question = await questionModel.findOne({ _id: questionID }).lean();
-    const answers = await answerModel.find({ questionID }).lean();
+    const question = await questionModel.findOne({ _id: questionID }).populate('creatorID', 'fullname').lean();
+    const answers = await answerModel.find({ questionID }).populate('creatorID').lean();
 
-    question.answers = answers;
+
+    question.answers = answers ? answers : [];
 
     res.status(200).json(question);
 
