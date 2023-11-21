@@ -26,9 +26,14 @@ const getMainCategories = async (req, res) => {
 const remove = async (req, res) => {
 
 }
+const getAll = async (req, res) => {
+    const categories = await categoryModel.find().lean();
+    return res.status(200).json(categories);
+}
 
 module.exports = {
     create,
     getMainCategories,
-    remove
+    remove,
+    getAll
 }

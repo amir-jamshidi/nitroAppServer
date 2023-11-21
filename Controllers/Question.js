@@ -1,6 +1,8 @@
 const questionModel = require('../Models/Question');
 const answerModel = require('../Models/Answer');
 const userModel = require('../Models/User');
+const categoryModel = require('../Models/Category');
+const saveQuestionModel = require('../Models/saveQuestion');
 
 const create = async (req, res) => {
 
@@ -37,6 +39,13 @@ const getMainQestions = async (req, res) => {
 
 }
 
+const getAllQuestions = async (req, res) => {
+    const questions = await questionModel.find().limit(100).populate('categoryID', 'title href style').populate('creatorID').lean();
+    if (questions) {
+        res.status(200).json(questions)
+    }
+}
+
 const remove = async (req, res) => {
 
 }
@@ -55,11 +64,32 @@ const answer = async (req, res) => {
     }
 }
 
+const getQuestionsByCategory = async (req, res) => {
+    const { href } = req.params;
+    const category = await categoryModel.findOne({ href }).lean();
+    const questions = await questionModel.find({ categoryID: category._id }).populate('categoryID').lean()
+
+    category.questions = questions;
+
+    res.status(200).json(category);
+}
+
+const saveQuestion = async (req, res) => {
+    const { questionID } = req.body
+    const saveQuestion = await saveQuestionModel.create({ questionID, userID: req.user._id })
+    if (saveQuestion) {
+        res.status(201).json(saveQuestion);
+    }
+}
+
 module.exports = {
     create,
     getOne,
     getMainQestions,
     remove,
     getByAdmin,
-    answer
+    answer,
+    getAllQuestions,
+    getQuestionsByCategory,
+    saveQuestion
 }
