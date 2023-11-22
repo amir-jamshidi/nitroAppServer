@@ -67,7 +67,7 @@ const login = async (req, res) => {
 
 const getMe = async (req, res) => {
     const myQuestions = await questionModel.find({ creatorID: req.user._id }).populate('creatorID').populate('categoryID').lean()
-    const saveQuestions = await saveQuestionModel.find({ userID: req.user._id }).populate({path : 'questionID' , populate : [{path : 'creatorID'} , {path : 'categoryID'}]}).lean()
+    const saveQuestions = await saveQuestionModel.find({ userID: req.user._id }).populate({ path: 'questionID', populate: [{ path: 'creatorID' }, { path: 'categoryID' }] }).lean()
     res.status(200).json({ userInfo: req.user, questions: myQuestions, saveQuestions });
 }
 
@@ -108,7 +108,15 @@ const confirmUser = async (req, res) => {
 const editProfile = async (req, res) => {
     const newProfile = await userModel.findOneAndUpdate({ _id: req.user._id }, { avatar: req.file.filename }, { new: true });
     if (newProfile) {
-        res.status(201).json(newProfile);
+        res.status(200).json(newProfile);
+    }
+}
+
+const editUserInfo = async (req, res) => {
+    const { fullname, email } = req.body
+    const newUserInfo = await userModel.findOneAndUpdate({ _id: req.user._id }, { fullname, email }, { new: true }).lean();
+    if (newUserInfo) {
+        res.status(200).json(newUserInfo);
     }
 }
 
@@ -118,5 +126,6 @@ module.exports = {
     login,
     register,
     confirmUser,
-    editProfile
+    editProfile,
+    editUserInfo
 }
