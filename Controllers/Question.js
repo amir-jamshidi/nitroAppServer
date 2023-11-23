@@ -58,8 +58,10 @@ const answer = async (req, res) => {
     const { body, questionID } = req.body
     await questionModel.findOneAndUpdate({ _id: questionID }, { isAnswer: 1, $inc: { answerCount: +1 } })
     await userModel.findOneAndUpdate({ _id: req.user._id }, { $inc: { score: +1 } })
-    const setAnswer = await answerModel.create({ body, questionID, creatorID: req.user._id });
+    let setAnswer = await answerModel.create({ body, questionID, creatorID: req.user._id });
     if (setAnswer) {
+        setAnswer = setAnswer.toObject();
+        setAnswer.creatorID = req.user
         res.status(201).json(setAnswer);
     }
 }
