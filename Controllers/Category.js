@@ -24,7 +24,7 @@ const getMainCategories = async (req, res) => {
 }
 
 const remove = async (req, res) => {
-
+    //Compelete This
 }
 const getAll = async (req, res) => {
     const categories = await categoryModel.find().lean();
