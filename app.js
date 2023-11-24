@@ -12,12 +12,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use("/media", express.static(path.join(__dirname, 'Public', 'media')));
-//---------
-app.use('/category', categoryRouter)
-app.use('/auth', authRouter)
-app.use('/questions', questionsRouter)
 
+
+
+    app.use("/media", express.static(path.join(__dirname, 'Public', 'media')));
+    //---------
+    app.use('/category', categoryRouter)
+    app.use('/auth', authRouter)
+    app.use('/questions', questionsRouter)
 
 
 module.exports = app;

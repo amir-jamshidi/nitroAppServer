@@ -3,6 +3,7 @@ const answerModel = require('../Models/Answer');
 const userModel = require('../Models/User');
 const categoryModel = require('../Models/Category');
 const saveQuestionModel = require('../Models/saveQuestion');
+const { default: mongoose } = require('mongoose');
 
 const create = async (req, res) => {
 
@@ -20,7 +21,16 @@ const getOne = async (req, res) => {
 
     const { questionID } = req.params;
 
-    const question = await questionModel.findOne({ _id: questionID }).populate('creatorID', 'fullname').lean();
+    if (!mongoose.Types.ObjectId.isValid(questionID)) {
+        return res.status(404).json({ message: 'Question ID Not Valid' })
+    }
+
+    const question = await questionModel.findOne({ _id: questionID }).populate('creatorID', 'fullname avatar').populate('categoryID').lean();
+
+    if (!question) {
+        return res.status(404).json({ message: 'Not Found Question' })
+    }
+
     const answers = await answerModel.find({ questionID }).populate('creatorID').lean();
 
 
@@ -69,10 +79,11 @@ const answer = async (req, res) => {
 const getQuestionsByCategory = async (req, res) => {
     const { href } = req.params;
     const category = await categoryModel.findOne({ href }).lean();
-    const questions = await questionModel.find({ categoryID: category._id }).populate('categoryID').lean()
-
+    if (!category) {
+        return res.status(404).json({ message: 'Not Found Category' })
+    }
+    const questions = await questionModel.find({ categoryID: category._id }).populate('categoryID').populate('creatorID').lean()
     category.questions = questions;
-
     res.status(200).json(category);
 }
 
