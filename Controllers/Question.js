@@ -1,6 +1,7 @@
 const questionModel = require('../Models/Question');
 const answerModel = require('../Models/Answer');
 const userModel = require('../Models/User');
+const likeModel = require('../Models/Like');
 const categoryModel = require('../Models/Category');
 const saveQuestionModel = require('../Models/saveQuestion');
 const { default: mongoose } = require('mongoose');
@@ -32,10 +33,10 @@ const getOne = async (req, res) => {
     }
 
     const answers = await answerModel.find({ questionID }).populate('creatorID').lean();
-
+    const likeCount = await likeModel.find({ questionID }).countDocuments().lean();
 
     question.answers = answers ? answers : [];
-
+    question.likeCount = likeCount
     res.status(200).json(question);
 
 }
@@ -94,6 +95,15 @@ const saveQuestion = async (req, res) => {
         res.status(201).json(saveQuestion);
     }
 }
+const likeQuestion = async (req, res) => {
+
+    const { answerID } = req.body
+    const like = await likeModel.create({ userID: req.user._id, answerID });
+    if (like) {
+        await answerModel.findOneAndUpdate({ _id: answerID }, { $inc: { like: +1 } }).lean();
+        res.status(201).json({ message: 'Success Like' })
+    }
+}
 
 module.exports = {
     create,
@@ -104,5 +114,6 @@ module.exports = {
     answer,
     getAllQuestions,
     getQuestionsByCategory,
-    saveQuestion
+    saveQuestion,
+    likeQuestion
 }
