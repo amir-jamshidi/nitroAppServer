@@ -32,6 +32,7 @@ const getOne = async (req, res) => {
         return res.status(404).json({ message: 'Not Found Question' })
     }
 
+
     const answers = await answerModel.find({ questionID }).populate('creatorID').lean();
     const likeCount = await likeModel.find({ questionID }).countDocuments().lean();
 
@@ -95,12 +96,23 @@ const saveQuestion = async (req, res) => {
         res.status(201).json(saveQuestion);
     }
 }
-const likeQuestion = async (req, res) => {
 
+
+const likeQuestion = async (req, res) => {
     const { answerID } = req.body
-    const like = await likeModel.create({ userID: req.user._id, answerID });
-    if (like) {
-        await answerModel.findOneAndUpdate({ _id: answerID }, { $inc: { like: +1 } }).lean();
+
+    const isLikeBefore = await likeModel.findOne({ userID: req.user._id, answerID });
+    if (isLikeBefore) {
+        const deleteLike = await likeModel.findOneAndDelete({ userID: req.user._id, answerID })
+        const likeCount = await likeModel.find({ answerID: deleteLike.answerID }).countDocuments().lean();
+        await answerModel.findOneAndUpdate({ _id: answerID }, { like: likeCount }).lean();
+        return res.status(200).json({ message: 'like deleted' })
+    }
+
+    const newLike = await likeModel.create({ userID: req.user._id, answerID });
+    if (newLike) {
+        const likeCount = await likeModel.find({ answerID: newLike.answerID }).countDocuments().lean();
+        await answerModel.findOneAndUpdate({ _id: answerID }, { like: likeCount }).lean();
         res.status(201).json({ message: 'Success Like' })
     }
 }
