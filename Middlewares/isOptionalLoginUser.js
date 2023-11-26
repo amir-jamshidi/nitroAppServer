@@ -8,11 +8,9 @@ const isLoginUser = async (req, res, next) => {
     if (bearerToken?.length !== 2) {
         req.user = null
         return next();
-        //return res.status(403).json({ message: 'This Route Is Protected' });
     }
 
     const token = bearerToken[1];
-
     try {
         const decodeToekn = jwt.verify(token, process.env.JWTSECRET);
         const userTarget = await userModel.findOne({ _id: decodeToekn.id }).lean()
