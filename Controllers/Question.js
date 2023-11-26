@@ -36,8 +36,18 @@ const getOne = async (req, res) => {
     const answers = await answerModel.find({ questionID }).populate('creatorID').lean();
     const likeCount = await likeModel.find({ questionID }).countDocuments().lean();
 
+    let isSaveThis;
+    if (req.user) {
+        isSaveThis = await saveQuestionModel.findOne({ questionID, userID: req.user._id }).lean();
+    }
+
     question.answers = answers ? answers : [];
     question.likeCount = likeCount
+    question.isSaveThis = isSaveThis ? true : false
+
+
+
+
     res.status(200).json(question);
 
 }
@@ -91,12 +101,19 @@ const getQuestionsByCategory = async (req, res) => {
 
 const saveQuestion = async (req, res) => {
     const { questionID } = req.body
+
+
+    const isSaveBefore = await saveQuestionModel.findOne({ questionID, userID: req.user._id });
+    if (isSaveBefore) {
+        await saveQuestionModel.findOneAndDelete({ questionID, userID: req.user._id });
+        return res.status(202).json({ message: "unsive" })
+    }
+
     const saveQuestion = await saveQuestionModel.create({ questionID, userID: req.user._id })
     if (saveQuestion) {
-        res.status(201).json(saveQuestion);
+        res.status(201).json({ message: 'save' });
     }
 }
-
 
 const likeQuestion = async (req, res) => {
     const { answerID } = req.body
@@ -115,6 +132,24 @@ const likeQuestion = async (req, res) => {
         await answerModel.findOneAndUpdate({ _id: answerID }, { like: likeCount }).lean();
         res.status(201).json({ message: 'Success Like' })
     }
+
+}
+
+const setTrueAnswer = async (req, res) => {
+
+    const { answerID, questionID } = req.body;
+    const isTrueAnswerBefore = await answerModel.findOne({ _id: answerID, questionID, isTrueAnswer: 1 }).lean();
+    if (isTrueAnswerBefore) {
+        return res.status(202).json({ message: 'The Answer Has True Answer' })
+    }
+    await questionModel.findOneAndUpdate({ creatorID: req.user._id, _id: questionID }, {
+        isHasTrueAnswer: 1
+    });
+    await answerModel.findOneAndUpdate({ _id: answerID }, {
+        isTrueAnswer: 1
+    })
+
+    res.status(201).json({ message: 'Set True Answer Success' });
 }
 
 module.exports = {
@@ -127,5 +162,6 @@ module.exports = {
     getAllQuestions,
     getQuestionsByCategory,
     saveQuestion,
-    likeQuestion
+    likeQuestion,
+    setTrueAnswer
 }
