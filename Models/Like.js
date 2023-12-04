@@ -12,7 +12,5 @@ const shcema = new mongoose.Schema({
     }
 
 }, { timestamps: true })
-
 const model = mongoose.model('like', shcema);
-
 module.exports = model
