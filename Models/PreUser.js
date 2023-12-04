@@ -9,6 +9,5 @@ const schema = new mongoose.Schema({
         required: true
     }
 }, { timestamps: true });
-
 const model = mongoose.model('preUser', schema);
 module.exports = model
