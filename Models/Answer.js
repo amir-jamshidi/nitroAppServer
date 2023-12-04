@@ -25,7 +25,5 @@ const schama = new mongoose.Schema({
     }
 
 }, { timestamps: true });
-
 const model = mongoose.model('answer', schama);
-
 module.exports = model
