@@ -11,6 +11,5 @@ const schema = new mongoose.Schema({
     },
 
 }, { timestamps: true })
-
 const model = mongoose.model('category', schema);
 module.exports = model
