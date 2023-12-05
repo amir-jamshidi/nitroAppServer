@@ -73,7 +73,6 @@ const confirmUser = async (req, res) => {
 
     // Verify Code
     const verifyUser = await preUserModel.findOneAndDelete({ phone, code });
-
     if (verifyUser) {
 
         const isHasUser = await userModel.findOne({ phone }).lean();
@@ -100,14 +99,12 @@ const confirmUser = async (req, res) => {
         })
     }
 }
-
 const editProfile = async (req, res) => {
     const newProfile = await userModel.findOneAndUpdate({ _id: req.user._id }, { avatar: req.file.filename }, { new: true });
     if (newProfile) {
         res.status(200).json(newProfile);
     }
 }
-
 const editUserInfo = async (req, res) => {
     const { fullname, email } = req.body
     const newUserInfo = await userModel.findOneAndUpdate({ _id: req.user._id }, { fullname, email }, { new: true }).lean();
