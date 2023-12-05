@@ -31,7 +31,6 @@ const register = async (req, res) => {
         })
     }
 }
-
 const login = async (req, res) => {
     const { phone } = req.body;
 
@@ -43,7 +42,6 @@ const login = async (req, res) => {
             status: 101
         });
     }
-
     //Start Login
     const code = codeGenerator();
 
