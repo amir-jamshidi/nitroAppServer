@@ -16,13 +16,11 @@ const create = async (req, res) => {
         })
     }
 }
-
 const getMainCategories = async (req, res) => {
 
     const categories = await categoryModel.find().limit(20).lean();
     return res.status(200).json(categories);
 }
-
 const remove = async (req, res) => {
     //Compelete This
 }
