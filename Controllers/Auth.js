@@ -7,7 +7,6 @@ const codeGenerator = require('../Utils/codeGenerator');
 
 const register = async (req, res) => {
     const { phone } = req.body;
-
     // Check Exist Phone
     const isExist = await userModel.findOne({ phone }).lean();
     if (isExist) {
@@ -16,7 +15,6 @@ const register = async (req, res) => {
             code: 102
         });
     }
-
     // Create User
     const code = codeGenerator();
     const isHasCode = await preUserModel.findOne({ phone }).lean();
