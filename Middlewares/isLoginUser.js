@@ -22,5 +22,4 @@ const isLoginUser = async (req, res, next) => {
         })
     }
 }
-
 module.exports = isLoginUser
